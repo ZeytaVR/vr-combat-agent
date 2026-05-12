@@ -1,4 +1,39 @@
-results/
+# PyCharm
 .idea/
+
+# ML-Agents results
+results/
+
+# Python
 __pycache__/
 *.pyc
+
+# Unity .gitignore Template
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+/[Aa]ssets/[Aa]ssets/
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/
