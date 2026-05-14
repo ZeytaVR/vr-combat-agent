@@ -24,8 +24,9 @@ Three progressive training runs, each increasing environment complexity:
 | combat-test-07 | Stationary enemy | 0.992 | ~80k              |
 | combat-test-08 | Moving enemy | 0.991 | ~300k             |
 | combat-test-09 | Moving enemy + health/damage | 2.112 | ~120k             |
+| combat-test-10 | Moving enemy + health/damage + distance shaping | 3.239 | ~150k (Std 0.33) |
 
-The reward increase in run 3 reflects the richer reward structure — +0.3 per hit, +1.0 for kill, -1.0 for death.
+The reward increase in run 3 reflects the richer reward structure — +0.3 per hit, +1.0 for kill, -1.0 for death. Run 4 adds distance shaping, producing higher rewards with intentional behavioral variety (Std ~0.33) rather than a single deterministic strategy.
 
 ## Stack
 
