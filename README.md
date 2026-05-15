@@ -36,6 +36,10 @@ The reward increase in run 3 reflects the richer reward structure — +0.3 per h
 - PyTorch 2.7.0+cu128
 - Python 3.10.12
 
+## Unity Project
+
+The Unity scene and C# scripts: [vr-combat-agent-unity](https://github.com/ZeytaVR/vr-combat-agent-unity)
+
 ## Roadmap
 
 - [ ] Load trained ONNX policy into Blade & Sorcery mod

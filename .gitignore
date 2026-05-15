@@ -1,6 +1,11 @@
 # PyCharm
 .idea/
 
+# Unity project folders (managed in vr-combat-agent-unity repo)
+Assets/
+Packages/
+ProjectSettings/
+
 # ML-Agents results
 results/
 
