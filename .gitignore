@@ -1,11 +1,6 @@
 # PyCharm
 .idea/
 
-# Unity project folders (managed in vr-combat-agent-unity repo)
-Assets/
-Packages/
-ProjectSettings/
-
 # ML-Agents results
 results/
 
@@ -42,3 +37,12 @@ __pycache__/
 *.VC.db
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/
+
+# Exclude Unity account-specific settings
+ProjectSettings/ProjectSettings.asset
+
+# Unity generated/boilerplate files
+Assets/InputSystem_Actions.inputactions
+Assets/InputSystem_Actions.inputactions.meta
+Assets/ML-Agents/
+Assets/ML-Agents.meta
