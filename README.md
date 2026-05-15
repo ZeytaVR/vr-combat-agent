@@ -36,9 +36,13 @@ The reward increase in run 3 reflects the richer reward structure — +0.3 per h
 - PyTorch 2.7.0+cu128
 - Python 3.10.12
 
-## Unity Project
+## Repository Structure
 
-The Unity scene and C# scripts: [vr-combat-agent-unity](https://github.com/ZeytaVR/vr-combat-agent-unity)
+- `Assets/Scripts/` — C# agent and enemy movement scripts
+- `Assets/Scenes/` — Unity combat arena scene
+- `Assets/combat-agent-v5.onnx` — latest trained policy
+- `models/` — all trained ONNX models (v1-v5)
+- `trainer_config.yaml` — PPO training configuration
 
 ## Roadmap
 
