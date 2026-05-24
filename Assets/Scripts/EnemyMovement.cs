@@ -9,6 +9,8 @@ public class EnemyMovement : MonoBehaviour
     private Vector3 moveDirection;
     private float timer;
 
+    public Vector3 Velocity => moveDirection * moveSpeed;
+
     void Start()
     {
         PickNewDirection();
@@ -38,6 +40,6 @@ public class EnemyMovement : MonoBehaviour
 
     public void ResetPosition(Vector3 position)
     {
-        transform.localPosition = position;
+        transform.position = position;
     }
 }

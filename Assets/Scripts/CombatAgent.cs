@@ -15,6 +15,11 @@ public class CombatAgent : Agent
     private float enemyHealth = 100f;
     private float attackTimer = 0f;
 
+    private const float MaxArenaDistance = 35f;
+    private const float MaxSpeed = 5f;
+    private const float MaxRelativePos = 25f;
+    private const float MaxEnemySpeed = 2f;
+
     public override void Initialize()
     {
         rb = GetComponent<Rigidbody>();
@@ -32,72 +37,90 @@ public class CombatAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(rb.velocity);
-        sensor.AddObservation(enemy.localPosition);
-        sensor.AddObservation(Vector3.Distance(transform.localPosition, enemy.localPosition));
+        // Relative position to enemy (3) — normalised by half arena size
+        Vector3 relativePos = enemy.localPosition - transform.localPosition;
+        sensor.AddObservation(relativePos.x / MaxRelativePos);
+        sensor.AddObservation(relativePos.y / 5f);
+        sensor.AddObservation(relativePos.z / MaxRelativePos);
+
+        // Agent velocity normalised (3)
+        sensor.AddObservation(rb.velocity.x / MaxSpeed);
+        sensor.AddObservation(rb.velocity.y / MaxSpeed);
+        sensor.AddObservation(rb.velocity.z / MaxSpeed);
+
+        // Distance to enemy normalised (1)
+        float distance = Vector3.Distance(transform.localPosition, enemy.localPosition);
+        sensor.AddObservation(distance / MaxArenaDistance);
+
+        // Direction to enemy as unit vector XZ (2)
+        Vector3 dirToEnemy = relativePos.magnitude > 0.01f
+            ? relativePos.normalized
+            : Vector3.zero;
+        sensor.AddObservation(dirToEnemy.x);
+        sensor.AddObservation(dirToEnemy.z);
+
+        // Health values (2)
         sensor.AddObservation(agentHealth / 100f);
         sensor.AddObservation(enemyHealth / 100f);
+
+        // Enemy velocity magnitude normalised (1)
+        float enemySpeed = enemy.GetComponent<EnemyMovement>().Velocity.magnitude;
+        sensor.AddObservation(enemySpeed / MaxEnemySpeed);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-    attackTimer -= Time.fixedDeltaTime;
+        attackTimer -= Time.fixedDeltaTime;
 
-    float moveX = actions.ContinuousActions[0];
-    float moveZ = actions.ContinuousActions[1];
-    Vector3 move = new Vector3(moveX, 0, moveZ) * moveSpeed;
-    rb.AddForce(move, ForceMode.VelocityChange);
+        float moveX = actions.ContinuousActions[0];
+        float moveZ = actions.ContinuousActions[1];
+        Vector3 move = new Vector3(moveX, 0, moveZ) * moveSpeed;
+        rb.AddForce(move, ForceMode.VelocityChange);
 
-    float distanceToEnemy = Vector3.Distance(transform.localPosition, enemy.localPosition);
+        float distanceToEnemy = Vector3.Distance(transform.localPosition, enemy.localPosition);
 
-    // Reward for closing distance
-    AddReward(0.01f * (1f / (distanceToEnemy + 0.1f)));
+        AddReward(0.01f * (1f / (distanceToEnemy + 0.1f)));
 
-    // Penalty for standing still in attack range without attacking
-    float speed = rb.velocity.magnitude;
-    if (distanceToEnemy < attackRange && attackTimer > 0f && speed < 0.5f)
-    {
-        AddReward(-0.01f);
-    }
-
-    bool attack = actions.DiscreteActions[0] == 1;
-
-    if (attack && distanceToEnemy < attackRange && attackTimer <= 0f)
-    {
-        enemyHealth -= 25f;
-        attackTimer = attackCooldown;
-        AddReward(0.3f);
-
-        if (enemyHealth <= 0f)
+        float speed = rb.velocity.magnitude;
+        if (distanceToEnemy < attackRange && attackTimer > 0f && speed < 0.5f)
         {
-            AddReward(1.0f);
+            AddReward(-0.01f);
+        }
+
+        bool attack = actions.DiscreteActions[0] == 1;
+        if (attack && distanceToEnemy < attackRange && attackTimer <= 0f)
+        {
+            enemyHealth -= 25f;
+            attackTimer = attackCooldown;
+            AddReward(0.3f);
+            if (enemyHealth <= 0f)
+            {
+                AddReward(1.0f);
+                EndEpisode();
+                return;
+            }
+        }
+
+        if (distanceToEnemy < attackRange)
+        {
+            agentHealth -= 0.5f;
+        }
+
+        if (agentHealth <= 0f)
+        {
+            AddReward(-1.0f);
             EndEpisode();
             return;
         }
-    }
 
-    // Enemy deals damage back periodically
-    if (distanceToEnemy < attackRange)
-    {
-        agentHealth -= 0.5f;
-    }
+        if (transform.localPosition.y < 0)
+        {
+            AddReward(-1.0f);
+            EndEpisode();
+            return;
+        }
 
-    if (agentHealth <= 0f)
-    {
-        AddReward(-1.0f);
-        EndEpisode();
-        return;
-    }
-
-    if (transform.localPosition.y < 0)
-    {
-        AddReward(-1.0f);
-        EndEpisode();
-        return;
-    }
-
-    AddReward(-0.001f);
+        AddReward(-0.001f);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
