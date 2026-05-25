@@ -28,7 +28,7 @@ public class CombatAgent : Agent
     public override void OnEpisodeBegin()
     {
         transform.localPosition = new Vector3(-2f, 1f, 0f);
-        rb.velocity = Vector3.zero;
+        rb.linearVelocity = Vector3.zero;
         enemy.GetComponent<EnemyMovement>().ResetPosition(new Vector3(2f, 1f, 0f));
         agentHealth = 100f;
         enemyHealth = 100f;
@@ -44,9 +44,9 @@ public class CombatAgent : Agent
         sensor.AddObservation(relativePos.z / MaxRelativePos);
 
         // Agent velocity normalised (3)
-        sensor.AddObservation(rb.velocity.x / MaxSpeed);
-        sensor.AddObservation(rb.velocity.y / MaxSpeed);
-        sensor.AddObservation(rb.velocity.z / MaxSpeed);
+        sensor.AddObservation(rb.linearVelocity.x / MaxSpeed);
+        sensor.AddObservation(rb.linearVelocity.y / MaxSpeed);
+        sensor.AddObservation(rb.linearVelocity.z / MaxSpeed);
 
         // Distance to enemy normalised (1)
         float distance = Vector3.Distance(transform.localPosition, enemy.localPosition);
@@ -81,7 +81,7 @@ public class CombatAgent : Agent
 
         AddReward(0.01f * (1f / (distanceToEnemy + 0.1f)));
 
-        float speed = rb.velocity.magnitude;
+        float speed = rb.linearVelocity.magnitude;
         if (distanceToEnemy < attackRange && attackTimer > 0f && speed < 0.5f)
         {
             AddReward(-0.01f);
@@ -101,7 +101,8 @@ public class CombatAgent : Agent
             }
         }
 
-        if (distanceToEnemy < attackRange)
+        EnemyMovement em = enemy.GetComponent<EnemyMovement>();
+        if (distanceToEnemy < attackRange && em.IsEngaging)
         {
             agentHealth -= 0.5f;
         }
